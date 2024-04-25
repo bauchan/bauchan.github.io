@@ -15,7 +15,8 @@
   </body>
 </html>
 <script>
- document.querySelector("#open").click = function(){
+ document.querySelector("#open").click = function(e){
+   e.preventdefault();
   var open = window.open("https://calendar.google.com/calendar/u/0/r/eventedit?text=TEST&dates=20240426T030000.000ZZ/20240426T040000.000ZZ&location=%E8%87%BA%E5%8C%97&details=XXXX%E6%B4%BB%E5%8B%95")
    setTimeout(() => {
          
