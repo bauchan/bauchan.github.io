@@ -1,0 +1,286 @@
+openapi: 3.0.0
+info:
+  title: Shelf Layout API
+  description: 提供指定藏書地點的書架佈局數據。
+  version: 1.0.0
+servers:
+  - url: https://webpactest.typl.gov.tw/api/HyLibWS
+    description: 測試環境 API 伺服器
+paths:
+  /shelfLayout/{ksCode}:
+    get:
+      summary: 獲取書架佈局
+      description: 根據藏書地點代碼 (`ksCode`) 獲取對應的書架佈局詳細信息。
+      parameters:
+        - name: ksCode
+          in: path
+          required: true
+          description: 藏書地點代碼
+          schema:
+            type: string
+            example: QP
+      responses:
+        '200':
+          description: 成功返回書架佈局數據
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      keepsiteId:
+                        type: integer
+                        description: 藏書地點 ID
+                        example: 1201
+                      keepsiteCode:
+                        type: string
+                        description: 藏書地點代碼
+                        example: QP
+                      keepsiteName:
+                        type: string
+                        description: 藏書地點名稱
+                        example: 青埔
+                      keeprooms:
+                        type: array
+                        description: 包含的房間列表
+                        items:
+                          type: object
+                          properties:
+                            keeproomId:
+                              type: integer
+                              description: 房間 ID
+                              example: 2545
+                            keeproomCode:
+                              type: string
+                              description: 房間代碼
+                              example: A
+                            keeproomName:
+                              type: string
+                              description: 房間名稱
+                              example: 閱覽室/區
+                            sections:
+                              type: array
+                              description: 房間內的區域列表
+                              items:
+                                type: object
+                                properties:
+                                  sectionId:
+                                    type: integer
+                                    description: 區域 ID
+                                    example: 1
+                                  sectionCode:
+                                    type: string
+                                    description: 區域代碼
+                                    example: A
+                                  sectionName:
+                                    type: string
+                                    description: 區域名稱
+                                    example: 青埔A區書架
+                                  shelves:
+                                    type: array
+                                    description: 書架列表
+                                    items:
+                                      type: object
+                                      properties:
+                                        shelfId:
+                                          type: integer
+                                          description: 書架 ID
+                                          example: 1
+                                        shelfNo:
+                                          type: string
+                                          description: 書架編號
+                                          example: QP01
+                                        shelfName:
+                                          type: string
+                                          description: 書架名稱
+                                          example: 5層5聯 (5層 x 5列)
+                                        groups:
+                                          type: array
+                                          description: 書架分組
+                                          items:
+                                            type: object
+                                            properties:
+                                              groupId:
+                                                type: integer
+                                                description: 分組 ID
+                                                example: 1
+                                              startRow:
+                                                type: integer
+                                                description: 起始層數
+                                                example: 1
+                                              endRow:
+                                                type: integer
+                                                description: 結束層數
+                                                example: 1
+  /shelves/{ksCode}:
+    get:
+      summary: "獲取書架分組列表"
+      description: "根據 ksCode 獲取書架的分組資訊"
+      parameters:
+        - name: ksCode
+          in: path
+          description: "圖書館的唯一標識碼"
+          required: true
+          schema:
+            type: string
+            example: QP            
+      responses:
+        "200":
+          description: "成功獲取書架資訊"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rows:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        keeproomId:
+                          type: integer
+                          description: "館藏室 ID"
+                        keeproomName:
+                          type: string
+                          description: "館藏室名稱"
+                        sectionId:
+                          type: integer
+                          description: "區域 ID"
+                        sectionName:
+                          type: string
+                          description: "區域名稱"
+                        shelfId:
+                          type: integer
+                          description: "書架 ID"
+                        shelfNo:
+                          type: string
+                          description: "書架編號"
+                        shelfName:
+                          type: string
+                          description: "書架名稱"
+                        groupId:
+                          type: integer
+                          description: "索書號群組 ID"
+                        startRow:
+                          type: integer
+                          description: "起始列"
+                        endRow:
+                          type: integer
+                          description: "結束列"
+                  success:
+                    type: boolean
+                    description: "操作是否成功"
+                  total:
+                    type: integer
+                    description: "總筆數"
+                  page:
+                    type: integer
+                    description: "目前頁數"
+  /shelvesInventory/{ksCode}:
+    get:
+      summary: "查詢書架的庫存資訊"
+      description: "根據 ksCode 和表單參數查詢書架的庫存資訊"
+      parameters:
+        - name: ksCode
+          in: path
+          description: "圖書館的唯一標識碼"
+          required: true
+          schema:
+            type: string
+            example: QP
+        - name: keeproomId
+          in: query
+          description: "館藏室 ID，支持多選"
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+          style: form
+          explode: true
+        - name: sectionId
+          in: query
+          description: "區域 ID，支持多選"
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+          style: form
+          explode: true
+        - name: shelfId
+          in: query
+          description: "書架 ID，支持多選"
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+          style: form
+          explode: true
+        - name: groupId
+          in: query
+          description: "索書號群組 ID，支持多選"
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+          style: form
+          explode: true
+        - name: pageNo
+          in: query
+          description: "頁碼，默認為 1"
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: "每頁限制的條數，默認為 30，上限 10000"
+          required: false
+          schema:
+            type: integer
+            default: 30
+      responses:
+        "200":
+          description: "成功獲取書架庫存資訊"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rows:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        barcode:
+                          type: string
+                          description: "條碼號"
+                        statusCode:
+                          type: string
+                          description: "館藏狀態"
+                  success:
+                    type: boolean
+                    description: "操作是否成功"
+                  total:
+                    type: integer
+                    description: "總筆數"
+                  offset:
+                    type: integer
+                    description: "第幾筆開始取"
+                  limit:
+                    type: integer
+                    description: "每頁筆數"
+                  totalPage:
+                    type: integer
+                    description: "總頁數"
+                  page:
+                    type: integer
+                    description: "當前頁碼"
