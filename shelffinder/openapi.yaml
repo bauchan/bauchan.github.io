@@ -4,6 +4,8 @@ info:
   description: 提供指定藏書地點的書架佈局數據。
   version: 1.0.0
 servers:
+  - url: https://webpac.typl.gov.tw/api/HyLibWS
+    description: 正式機 API 伺服器
   - url: https://webpactest.typl.gov.tw/api/HyLibWS
     description: 測試環境 API 伺服器
 paths:
